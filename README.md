@@ -1,114 +1,61 @@
-# 🏠 Homelab
+# Guida Cloud per Principianti
 
-Personal homelab setup documentation. This repository contains configurations, guides, and notes for my self-hosted infrastructure.
+Guida pratica e open-source in italiano per chi vuole muovere i primi passi nel mondo del Cloud Computing — senza prerequisiti, senza acronimi inutili.
 
-## 📐 Infrastructure Overview
-
-```
-Internet
-    │
-    ▼
-Router
-    │
-    ├── NAS (Ugreen DH4300 Plus)        → Docker services, storage
-    ├── Mini PC (HP ProDesk G400)        → Jellyfin media server
-    └── Personal PC (Windows 11)         → Daily use
-```
-
-All devices are connected via **Tailscale** for secure remote access, with **Nginx Proxy Manager** handling HTTPS and reverse proxying.
+> Pensata per chi sente parlare di "cloud" ogni giorno ma non sa ancora da dove iniziare.
 
 ---
 
-## 🖥️ Hardware
+## A chi è rivolta
 
-| Device | Model | Role |
-|---|---|---|
-| NAS | Ugreen DH4300 Plus | Docker host, storage, main services |
-| Mini PC | HP ProDesk G400 Mini (8GB RAM) | Jellyfin transcoding |
-| Personal PC | Windows 11 | Daily use |
-
----
-
-## 🐳 Docker Services (NAS)
-
-| Service | Description | Port |
-|---|---|---|
-| Vaultwarden | Self-hosted password manager (Bitwarden compatible) | `<PORT>` |
-| Nginx Proxy Manager | Reverse proxy with HTTPS | `<PORT>` |
-| Tailscale | VPN mesh network | - |
-| Pihole | Network-wide ad blocker | `<PORT>` |
-| Radarr | Movie management | `<PORT>` |
-| Sonarr | TV series management | `<PORT>` |
-| Prowlarr | Indexer manager | `<PORT>` |
-| qBittorrent + Gluetun | Torrent client with VPN | `<PORT>` |
-| Flaresolverr | Cloudflare bypass for indexers | `<PORT>` |
-| Prometheus | Metrics collection | `<PORT>` |
-| Grafana | Metrics visualization | `<PORT>` |
-| Node Exporter | System metrics exporter (NAS) | `<PORT>` |
-| cAdvisor | Docker container metrics | `<PORT>` |
-
-## 🖥️ Services (Mini PC)
-
-| Service | Description |
-|---|---|
-| Jellyfin | Media server with hardware transcoding |
-| Node Exporter | System metrics exporter |
+- Chi si avvicina all'IT e vuole capire cosa significa "andare sul cloud"
+- Sistemisti che vogliono strutturare le proprie conoscenze cloud
+- Chi vuole prepararsi alle certificazioni entry-level (AZ-900, AWS CCP, GCD)
+- Studenti di informatica che vogliono una guida pratica in italiano
 
 ---
 
-## 🔒 Security & Networking
+## Contenuti
 
-- **Tailscale** — All services are accessible only through Tailscale VPN, no ports exposed to the internet
-- **Nginx Proxy Manager** — Reverse proxy with SSL certificates generated via Tailscale HTTPS
-- **Pihole** — DNS-level ad blocking for the entire network
-- **Vaultwarden** — Self-hosted password manager, accessible only via Tailscale
+### Fondamenta
+- [Modelli di servizio cloud](docs/modelli-cloud.md) — IaaS, PaaS, SaaS spiegati con esempi reali
+- [Tipi di cloud](docs/tipi-di-cloud.md) — Pubblico, privato, ibrido: differenze e quando usarli
 
-### Network Access Pattern
-```
-Device (with Tailscale) → HTTPS → Nginx Proxy Manager → Service
-```
+### Provider
+- [I grandi provider cloud](docs/provider-cloud.md) — AWS, Azure e GCP a confronto
 
----
+### Certificazioni
+- [Roadmap certificazioni](docs/certificazioni.md) — Da dove iniziare, costi e consigli pratici
 
-## 📊 Monitoring
+### Casi d'uso
+- [Scenari reali](docs/casi-duso.md) — Come il cloud viene usato concretamente in azienda
 
-Prometheus + Grafana stack for monitoring all devices:
-
-- **Node Exporter** on NAS and Mini PC → CPU, RAM, disk, network metrics
-- **cAdvisor** on NAS → Docker container metrics
-- **Grafana dashboard** — Node Exporter Full (ID: 1860)
-- **Alerting** via Discord for service downtime
+### Risorse
+- [Corsi e risorse gratuite](docs/risorse.md) — Dove studiare senza spendere
 
 ---
 
-## 📁 Repository Structure
+## Roadmap contenuti
 
-```
-homelab/
-├── README.md
-├── nas/
-│   └── README.md          # NAS setup and configuration
-├── minipc/
-│   └── README.md          # Mini PC + Jellyfin setup
-├── docker/
-│   ├── vaultwarden/       # Vaultwarden + NPM + SSL setup
-│   ├── prometheus/        # prometheus.yml config
-│   └── grafana/           # Grafana setup
-└── docs/
-    └── network.md         # Network architecture
-```
+- [x] Modelli di servizio (IaaS, PaaS, SaaS)
+- [x] Tipi di cloud
+- [x] Confronto provider
+- [x] Certificazioni entry-level
+- [x] Casi d'uso reali
+- [x] Risorse gratuite
+- [ ] Networking nel cloud (VPC, subnet, firewall)
+- [ ] Storage cloud (S3, Blob, GCS)
+- [ ] Serverless in pratica
+- [ ] Cloud per il homelab
 
 ---
 
-## 🚀 Guides
+## Autore
 
-- [Vaultwarden with HTTPS via Tailscale + NPM](docker/vaultwarden/README.md)
-- [Prometheus + Grafana monitoring stack](docker/prometheus/README.md)
-- [Arr stack setup (Radarr, Sonarr, Prowlarr)](nas/README.md)
+**Nicholas Izzo** — Sistemista, studente L31 Informatica (specializzazione AI) @ Università Pegaso
+
+[nicholasiszzo.github.io](https://NicholasIzzo.github.io) · [Homelab](https://github.com/NicholasIzzo/homelab) · [AI Practical Guide](https://github.com/NicholasIzzo/ai-practical-guide)
 
 ---
 
-## 📝 Notes
-
-- All sensitive data (IPs, ports, passwords, domains) are replaced with `<PLACEHOLDER>` throughout this repository
-- Tailscale is used instead of exposing ports publicly — no port forwarding on the router
+> *"Il cloud non è qualcosa di magico — è solo il computer di qualcun altro. Ma usarlo bene fa tutta la differenza."*
