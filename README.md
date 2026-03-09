@@ -1,114 +1,114 @@
-# Guida Cloud per Principianti
+# 🏠 Homelab
 
-Guida pratica e open-source in italiano dedicata a chi vuole muovere i primi passi nel mondo del Cloud Computing. Concetti base, certificazioni, panoramiche sui provider e casi d'uso reali — senza prerequisiti.
+Personal homelab setup documentation. This repository contains configurations, guides, and notes for my self-hosted infrastructure.
 
-> Pensata per chi sente parlare di "cloud" ogni giorno ma non sa ancora da dove iniziare.
-
----
-
-## Cosa trovi in questa guida
-
-- Differenze tra IaaS, PaaS e SaaS spiegate con analogie semplici
-- Confronto tra i tre grandi provider: AWS, Azure, GCP
-- Roadmap certificazioni entry-level con costi e ordine consigliato
-- Casi d'uso reali: e-commerce, backup, serverless
-- Risorse gratuite per studiare: corsi, canali YouTube, documentazione
-
----
-
-## I Modelli di Servizio
-
-| Modello | Significato | Cosa gestisci tu | Esempi |
-|---|---|---|---|
-| **On-Premises** | Tutto in casa | Hardware, OS, Rete, Dati, App | Data center aziendale, Homelab |
-| **IaaS** | Infrastructure as a Service | OS, Dati, App | Amazon EC2, Azure VM |
-| **PaaS** | Platform as a Service | Dati, App | Heroku, Google App Engine |
-| **SaaS** | Software as a Service | Solo utilizzo | Gmail, Microsoft 365, Dropbox |
-
----
-
-## I Provider Principali
-
-| Provider | Sviluppatore | Quota Mercato | Punto di forza |
-|---|---|---|---|
-| **AWS** | Amazon | ~32% | Leader di mercato, ecosistema vastissimo |
-| **Azure** | Microsoft | ~23% | Ideale per ambienti Enterprise e Microsoft 365 |
-| **GCP** | Google | ~10% | Eccellente per Big Data, ML e Kubernetes |
-
----
-
-## Architettura Cloud vs On-Premise
+## 📐 Infrastructure Overview
 
 ```
-Utente
-  │
-  ▼
 Internet
-  │
-  ├── Cloud Pubblico (AWS, Azure, GCP)
-  │     └── Server di terze parti, scalabili, pay-as-you-go
-  │
-  ├── Cloud Privato (Data Center)
-  │     └── Server proprietari, rete chiusa, controllo totale
-  │
-  └── Cloud Ibrido
-        └── Mix strategico tra infrastruttura pubblica e privata
+    │
+    ▼
+Router
+    │
+    ├── NAS (Ugreen DH4300 Plus)        → Docker services, storage
+    ├── Mini PC (HP ProDesk G400)        → Jellyfin media server
+    └── Personal PC (Windows 11)         → Daily use
+```
+
+All devices are connected via **Tailscale** for secure remote access, with **Nginx Proxy Manager** handling HTTPS and reverse proxying.
+
+---
+
+## 🖥️ Hardware
+
+| Device | Model | Role |
+|---|---|---|
+| NAS | Ugreen DH4300 Plus | Docker host, storage, main services |
+| Mini PC | HP ProDesk G400 Mini (8GB RAM) | Jellyfin transcoding |
+| Personal PC | Windows 11 | Daily use |
+
+---
+
+## 🐳 Docker Services (NAS)
+
+| Service | Description | Port |
+|---|---|---|
+| Vaultwarden | Self-hosted password manager (Bitwarden compatible) | `<PORT>` |
+| Nginx Proxy Manager | Reverse proxy with HTTPS | `<PORT>` |
+| Tailscale | VPN mesh network | - |
+| Pihole | Network-wide ad blocker | `<PORT>` |
+| Radarr | Movie management | `<PORT>` |
+| Sonarr | TV series management | `<PORT>` |
+| Prowlarr | Indexer manager | `<PORT>` |
+| qBittorrent + Gluetun | Torrent client with VPN | `<PORT>` |
+| Flaresolverr | Cloudflare bypass for indexers | `<PORT>` |
+| Prometheus | Metrics collection | `<PORT>` |
+| Grafana | Metrics visualization | `<PORT>` |
+| Node Exporter | System metrics exporter (NAS) | `<PORT>` |
+| cAdvisor | Docker container metrics | `<PORT>` |
+
+## 🖥️ Services (Mini PC)
+
+| Service | Description |
+|---|---|
+| Jellyfin | Media server with hardware transcoding |
+| Node Exporter | System metrics exporter |
+
+---
+
+## 🔒 Security & Networking
+
+- **Tailscale** — All services are accessible only through Tailscale VPN, no ports exposed to the internet
+- **Nginx Proxy Manager** — Reverse proxy with SSL certificates generated via Tailscale HTTPS
+- **Pihole** — DNS-level ad blocking for the entire network
+- **Vaultwarden** — Self-hosted password manager, accessible only via Tailscale
+
+### Network Access Pattern
+```
+Device (with Tailscale) → HTTPS → Nginx Proxy Manager → Service
 ```
 
 ---
 
-## Certificazioni Entry-Level
+## 📊 Monitoring
 
-| Certificazione | Provider | Livello | Costo |
-|---|---|---|---|
-| **AZ-900** Azure Fundamentals | Microsoft | Principiante | ~165€ |
-| **AWS Cloud Practitioner** CLF-C02 | Amazon | Principiante | ~100€ |
-| **Google Cloud Digital Leader** | Google | Principiante | ~200€ |
+Prometheus + Grafana stack for monitoring all devices:
 
-**Ordine consigliato:** AZ-900 → AWS CCP → Google CDL
+- **Node Exporter** on NAS and Mini PC → CPU, RAM, disk, network metrics
+- **cAdvisor** on NAS → Docker container metrics
+- **Grafana dashboard** — Node Exporter Full (ID: 1860)
+- **Alerting** via Discord for service downtime
 
 ---
 
-## Struttura del Repository
+## 📁 Repository Structure
 
 ```
-guida-cloud-principianti/
+homelab/
 ├── README.md
-├── 01-Le-Basi/
-│   ├── 1-modelli-cloud.md          # IaaS, PaaS, SaaS (Analogia della Pizza)
-│   └── 2-tipi-di-cloud.md          # Pubblico, Privato, Ibrido
-├── 02-I-Provider/
-│   └── 1-panoramica-provider.md    # Differenze tra AWS, Azure e GCP
-├── 03-Certificazioni/
-│   └── 1-roadmap-principianti.md   # Roadmap esami e costi
-├── 04-Casi-d-Uso/
-│   └── 1-scenari-reali.md          # E-commerce, Backup, Serverless
-└── 05-Risorse-Utili/
-    └── 1-link-e-corsi.md           # Piattaforme di studio e canali YouTube
+├── nas/
+│   └── README.md          # NAS setup and configuration
+├── minipc/
+│   └── README.md          # Mini PC + Jellyfin setup
+├── docker/
+│   ├── vaultwarden/       # Vaultwarden + NPM + SSL setup
+│   ├── prometheus/        # prometheus.yml config
+│   └── grafana/           # Grafana setup
+└── docs/
+    └── network.md         # Network architecture
 ```
 
 ---
 
-## Casi d'Uso Pratici
+## 🚀 Guides
 
-**Siti Web Scalabili** — Auto-scaling per gestire picchi di traffico (es. Black Friday) senza crash o sovra-provisioning.
-
-**Disaster Recovery** — Backup distribuiti geograficamente per azzerare il rischio di perdita dati in caso di guasto.
-
-**Architetture Serverless** — Esecuzione di codice a evento pagando solo i millisecondi di utilizzo effettivo.
+- [Vaultwarden with HTTPS via Tailscale + NPM](docker/vaultwarden/README.md)
+- [Prometheus + Grafana monitoring stack](docker/prometheus/README.md)
+- [Arr stack setup (Radarr, Sonarr, Prowlarr)](nas/README.md)
 
 ---
 
-## Note
+## 📝 Notes
 
-- Il materiale è pensato per **principianti assoluti** — non è richiesta programmazione
-- L'obiettivo è fornire una mappa per orientarsi tra gli acronimi del cloud
-- Progetto open-source: puoi contribuire aprendo una Pull Request
-
----
-
-## Autore
-
-**Nicholas Izzo** — Sistemista, studente L31 Informatica (specializzazione AI) @ Università Pegaso
-
-[nicholasiszzo.github.io](https://NicholasIzzo.github.io) · [Homelab](https://github.com/NicholasIzzo/homelab) · [AI Practical Guide](https://github.com/NicholasIzzo/ai-practical-guide)
+- All sensitive data (IPs, ports, passwords, domains) are replaced with `<PLACEHOLDER>` throughout this repository
+- Tailscale is used instead of exposing ports publicly — no port forwarding on the router
